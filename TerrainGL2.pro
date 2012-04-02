@@ -36,6 +36,7 @@ shaders.files += data/shaders/terrain.frag \
 INSTALLS += data shaders
 
 OTHER_FILES += \
-    LICENSE.txt
+    LICENSE.txt \
+    README.txt
 
 DEFINES += DEBUG
