@@ -23,10 +23,12 @@
 #include <TextureManager.h>
 
 struct TerrainRegion {
+
     float min;
     float max;
     GLuint texture;
     std::string filename;
+
 };
 
 class GameWindow : public sf::RenderWindow {
