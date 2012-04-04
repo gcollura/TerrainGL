@@ -18,9 +18,10 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <string>
+#include <cstring>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <ctime>
 
 typedef std::string string;

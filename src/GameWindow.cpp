@@ -16,8 +16,6 @@
 //
 
 #include <GameWindow.h>
-#include <System.h>
-#include <Camera.h>
 #include <Math.h>
 #include <iostream>
 
@@ -26,6 +24,21 @@ GameWindow::GameWindow () {
     m_textureManager = new TextureManager ();
     m_textureManager->addResourceDirectory ("data/");
 
+    // Terrain region 1.
+    m_regions[0].set (0.0f, 50.0f * HEIGHTMAP_SCALE, 0, "content/textures/dirt.jpg");
+    // Terrain region 2.
+    m_regions[1].set (51.0f * HEIGHTMAP_SCALE, 101.0f * HEIGHTMAP_SCALE, 0, "content/textures/grass.jpg");
+    // Terrain region 3.
+    m_regions[2].set (102.0f * HEIGHTMAP_SCALE, 203.0f * HEIGHTMAP_SCALE, 0, "content/textures/rock.jpg");
+    // Terrain region 4.
+    m_regions[3].set (204.0f * HEIGHTMAP_SCALE, 255.0f * HEIGHTMAP_SCALE, 0, "content/textures/snow.jpg");
+
+    // Light directions
+    m_lightDir[0] = 0.0f;
+    m_lightDir[1] = 1.0f;
+    m_lightDir[2] = 0.0f;
+    m_lightDir[3] = 0.0f;
+
 }
 
 GameWindow::~GameWindow () {
@@ -33,6 +46,26 @@ GameWindow::~GameWindow () {
     if (m_textureManager)
         delete m_textureManager;
     m_textureManager = 0;
+
+    for (int i = 0; i < TERRAIN_REGIONS_COUNT; ++i) {
+        if (m_regions[i].texture) {
+            glDeleteTextures (1, &m_regions[i].texture);
+            m_regions[i].texture = 0;
+        }
+    }
+
+    if (m_nullTexture) {
+        glDeleteTextures (1, &m_nullTexture);
+        m_nullTexture = 0;
+    }
+
+    if (m_terrainShader) {
+        glUseProgram (0);
+        glDeleteProgram (m_terrainShader);
+        m_terrainShader = 0;
+    }
+
+    m_terrain.destroy();
 
 }
 
