@@ -13,7 +13,9 @@ HEADERS += \
     include/TextureManager.h \
     include/Camera.h \
     include/Terrain.h \
-    include/OpenGL.h
+    include/OpenGL.h \
+    include/Water.h \
+    include/Terrain2.h
 
 SOURCES += Main.cpp \
     src/System.cpp \
@@ -21,25 +23,35 @@ SOURCES += Main.cpp \
     src/GameWindow.cpp \
     src/TextureManager.cpp \
     src/Camera.cpp \
-    src/Terrain.cpp
+    src/Terrain.cpp \
+    src/OpenGL.cpp \
+    src/Water.cpp \
+    src/Terrain2.cpp
 
-LIBS += -L/usr/lib \
+LIBS += -L/usr/lib -lglut \
         -lsfml-window -lsfml-audio \
         -lsfml-system -lsfml-graphics
 
 data.path = ../TerrainGL2-build/data
 data.files += data/splashscreen.jpg \
-              data/cubemap_posx.jpg
+              data/landscape.jpg \
+              data/reflection.png \
+              data/terrain.bmp \
+              data/heightmap.jpg \
+              data/simple-heightmap.jpg
 
 shaders.path = ../TerrainGL2-build/data/shaders
 shaders.files += data/shaders/terrain.frag \
                  data/shaders/terrain.vert
 
 textures.path = ../TerrainGL2-build/data/textures
-textures.files += data/textures/dirt.jpg \
+textures.files += data/textures/dirt.png \
                   data/textures/grass.jpg \
+                  data/textures/grass2.png \
                   data/textures/rock.jpg \
-                  data/textures/snow.jpg
+                  data/textures/rock2.png \
+                  data/textures/snow.jpg \
+                  data/textures/sand.jpg
 
 INSTALLS += data shaders textures
 

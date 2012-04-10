@@ -125,3 +125,22 @@ string Console::getTime () {
 
     return time;
 }
+
+string System::readTextFile (string filename) {
+
+    std::ifstream file (filename.c_str (), std::ios::binary | std::ios::in);
+    string buffer;
+
+    if (file.is_open ()) {
+        file.seekg (0, std::ios::end);
+
+        std::ifstream::pos_type fileSize = file.tellg ();
+
+        buffer.resize (static_cast<unsigned int>(fileSize));
+        file.seekg (0, std::ios::beg);
+        file.read (&buffer[0], fileSize);
+        file.close ();
+    }
+
+    return buffer;
+}

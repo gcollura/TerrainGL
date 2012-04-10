@@ -23,10 +23,6 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-// GL_EXT_texture_filter_anisotropic
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-
 // Macro to return the byte offset into a buffer object in machine units.
 // This is used primarily for Buffer Objects.
 inline const GLubyte *BUFFER_OFFSET(size_t bytes) {
@@ -34,18 +30,18 @@ inline const GLubyte *BUFFER_OFFSET(size_t bytes) {
 }
 
 // Determines whether an OpenGL extension is supported.
-extern bool OpenGLExtensionSupported(const char *pszExtensionName);
+extern bool OpenGLExtensionSupported (const char *pszExtensionName);
 
 // Returns the highest supported GL version.
-extern void OpenGLGetGLVersion(int &major, int &minor);
+extern void OpenGLGetGLVersion (int &major, int &minor);
 
 // Returns the highest supported GLSL version.
-extern void OpenGLGetGLSLVersion(int &major, int &minor);
+extern void OpenGLGetGLSLVersion (int &major, int &minor);
 
 // Determines whether the specified GL version is supported.
-extern bool OpenGLSupportsGLVersion(int major, int minor);
+extern bool OpenGLSupportsGLVersion (int major, int minor);
 
 // Determines whether the specified GLSL version is supported.
-extern bool OpenGLSupportsGLSLVersion(int major, int minor);
+extern bool OpenGLSupportsGLSLVersion (int major, int minor);
 
 #endif // OPENGL_H

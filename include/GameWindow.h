@@ -22,23 +22,10 @@
 #include <OpenGL.h>
 #include <TextureManager.h>
 #include <Terrain.h>
+#include <Terrain2.h>
 #include <Camera.h>
 #include <System.h>
-
-const int       TERRAIN_REGIONS_COUNT = 4;
-
-const float     HEIGHTMAP_ROUGHNESS = 1.2f;
-const float     HEIGHTMAP_SCALE = 2.0f;
-const float     HEIGHTMAP_TILING_FACTOR = 12.0f;
-const int       HEIGHTMAP_SIZE = 128;
-const int       HEIGHTMAP_GRID_SPACING = 16;
-
-const float     CAMERA_FOVX = 90.0f;
-const float     CAMERA_ZFAR = HEIGHTMAP_SIZE * HEIGHTMAP_GRID_SPACING * 2.0f;
-const float     CAMERA_ZNEAR = 1.0f;
-const float     CAMERA_Y_OFFSET = 25.0f;
-const Vector3   CAMERA_ACCELERATION (400.0f, 400.0f, 400.0f);
-const Vector3   CAMERA_VELOCITY (100.0f, 100.0f, 100.0f);
+#include <Water.h>
 
 
 struct TerrainRegion {
@@ -58,48 +45,66 @@ struct TerrainRegion {
 
 };
 
+struct BackScene {
+    GLuint texture;
+    string filename;
+
+    inline void set (GLuint g_texture, string g_filename) {
+        texture = g_texture;
+        filename = g_filename;
+    }
+};
+
 class GameWindow : public sf::RenderWindow {
 public:
     GameWindow ();
     virtual ~GameWindow ();
 
     void run ();
-    void saveScreenshot (std::string destDir, std::string filename);
+    void saveScreenshot (string destDir, string filename);
 
 protected:
     void render ();
 
 private:
-    void setup ();
+    bool init ();
+    bool initGL ();
     void keyboardEvent (sf::Keyboard::Key key);
+    void getInput ();
+
     GLuint compileShader (GLenum type, const GLchar* g_source, GLint length);
     GLuint createNullTexture (int g_width, int g_height);
     void generateTerrain ();
     GLuint linkShaders (GLuint vertShader, GLuint fragShader);
-    GLuint loadShaderProgram (const char *filename, string &infoLog);
+    GLuint loadShaderProgram (string fragFilename, string vertFilename, string &infoLog);
     GLuint loadTexture (string filename);
     GLuint loadTexture (string filename, GLint magFilter, GLint minFilter,
                         GLint wrapS, GLint wrapT);
     void bindTexture (GLuint texture, GLuint unit);
     void renderTerrain ();
     void updateTerrainShaderParameters ();
+    void updateCameraPosition ();
 
     sf::Clock m_clock;
 
     TextureManager *m_textureManager;
-    sf::Sprite m_background;
     sf::Sprite m_splashscreen;
+
     int m_ScreenNum;
+    float m_maxAnisotrophy;
     bool m_disableColorMaps;
     float m_lightDir[4];
     GLuint m_nullTexture;
     GLuint m_terrainShader;
     Terrain m_terrain;
+    Terrain2 m_terrain2;
+    Water m_water;
     Camera m_camera;
     Vector3 m_cameraBoundsMax;
     Vector3 m_cameraBoundsMin;
 
-    TerrainRegion m_regions[TERRAIN_REGIONS_COUNT];
+    TerrainRegion m_regions[4];
+    BackScene m_background[6];
 
 };
 

@@ -23,8 +23,10 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <stdexcept>
 
 typedef std::string string;
+typedef std::runtime_error error;
 
 enum LogLevel {
     DEFAULT,
@@ -63,6 +65,14 @@ public:
 
 private:
     static string getTime ();
+};
+
+class System {
+
+public:
+    static string readTextFile (string filename);
+    static bool writeTextFile (string filename, string text);
+    static bool writeTextFile (string filename, char* text);
 };
 
 #endif // CONSOLE_H

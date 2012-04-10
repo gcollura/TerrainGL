@@ -28,44 +28,38 @@
 // HeightMap.
 //-----------------------------------------------------------------------------
 
-HeightMap::HeightMap() : m_size(0), m_gridSpacing(0), m_heightScale(1.0f)
-{
+HeightMap::HeightMap ()
+    : m_size(0), m_gridSpacing(0), m_heightScale(1.0f) {
 }
 
-HeightMap::~HeightMap()
-{
-    destroy();
+HeightMap::~HeightMap () {
+    destroy ();
 }
 
-bool HeightMap::create(int size, int gridSpacing, float scale)
-{
+bool HeightMap::create (int size, int gridSpacing, float scale) {
     m_heightScale = scale;
     m_size = size;
     m_gridSpacing = gridSpacing;
 
-    try
-    {
-        m_heights.resize(m_size * m_size);
-    }
-    catch (const std::bad_alloc &)
-    {
+    try {
+        m_heights.resize (m_size * m_size);
+    } catch (const std::bad_alloc &) {
         return false;
     }
 
-    memset(&m_heights[0], 0, m_heights.size());
+    memset (&m_heights[0], 0, m_heights.size());
     return true;
 }
 
-void HeightMap::destroy()
-{
+void HeightMap::destroy() {
     m_heightScale = 1.0f;
     m_size = 0;
     m_gridSpacing = 0;
     m_heights.clear();
 }
 
-void HeightMap::generateDiamondSquareFractal(float roughness)
-{
+void HeightMap::generateDiamondSquareFractal(float roughness) {
+
     // Generates a fractal height field using the diamond-square (midpoint
     // displacement) algorithm. Note that only square height fields work with
     // this algorithm.
@@ -164,8 +158,8 @@ float HeightMap::heightAt(float x, float z) const
     return Math::bilerp(topLeft, topRight, bottomLeft, bottomRight, percentX, percentZ);
 }
 
-void HeightMap::normalAt(float x, float z, Vector3 &n) const
-{
+void HeightMap::normalAt (float x, float z, Vector3 &n) const {
+
     // Given a (x, z) position on the rendered height map this method
     // calculates the exact normal of the height map at that (x, z) position
     // using bilinear interpolation.
@@ -197,8 +191,8 @@ void HeightMap::normalAt(float x, float z, Vector3 &n) const
     n.normalize();
 }
 
-void HeightMap::normalAtPixel(int x, int z, Vector3 &n) const
-{
+void HeightMap::normalAtPixel(int x, int z, Vector3 &n) const {
+
     // Returns the normal at the specified location on the height map.
     // The normal is calculated using the properties of the height map.
     // This approach is much quicker and more elegant than triangulating the
@@ -588,16 +582,13 @@ bool Terrain::generateVertices()
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
     pVertices = static_cast<Vertex *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
 
-    if (!pVertices)
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if (!pVertices) {
+        glBindBuffer (GL_ARRAY_BUFFER, 0);
         return false;
     }
 
-    for (int z = 0; z < size; ++z)
-    {
-        for (int x = 0; x < size; ++x)
-        {
+    for (int z = 0; z < size; ++z) {
+        for (int x = 0; x < size; ++x) {
             currVertex = z * size + x;
             pVertex = &pVertices[currVertex];
 

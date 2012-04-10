@@ -15,20 +15,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <SFML/Graphics.hpp>
-#include <System.h>
 #include <GameWindow.h>
-
-using namespace std;
-
-GameWindow window;
-sf::CircleShape circle;
-sf::Sprite background;
 
 int main() {
 
     Console::writeLine ("Hello World, welcome to TerrainGL");
 
+    GameWindow window;
     window.run ();
 
     Console::writeLine ("End.");
