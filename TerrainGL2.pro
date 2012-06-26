@@ -5,6 +5,7 @@ CONFIG += x11 opengl
 
 TARGET = TerrainGL
 INCLUDEPATH += include
+QMAKE_CXXFLAGS += -std=c++0x -pthread
 
 HEADERS += \
     include/System.h \
@@ -28,7 +29,7 @@ SOURCES += Main.cpp \
     src/Water.cpp \
     src/Terrain2.cpp
 
-LIBS += -L/usr/lib -lglut \
+LIBS += -L/usr/lib \
         -lsfml-window -lsfml-audio \
         -lsfml-system -lsfml-graphics
 
@@ -37,8 +38,7 @@ data.files += data/splashscreen.jpg \
               data/landscape.jpg \
               data/reflection.png \
               data/terrain.bmp \
-              data/heightmap.jpg \
-              data/simple-heightmap.jpg
+              data/heightmap.jpg
 
 shaders.path = ../TerrainGL2-build/data/shaders
 shaders.files += data/shaders/terrain.frag \

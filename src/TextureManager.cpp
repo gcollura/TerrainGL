@@ -43,7 +43,7 @@ const sf::Texture& TextureManager::getTexture (const std::string &filename) {
         }
     }
 
-    // The Texture doesen't exists. Create it and save it.
+    // The Texture doesn't exists. Create it and save it.
     sf::Texture texture;
 
     // Search project's main directory

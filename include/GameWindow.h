@@ -75,6 +75,7 @@ private:
     GLuint compileShader (GLenum type, const GLchar* g_source, GLint length);
     GLuint createNullTexture (int g_width, int g_height);
     void generateTerrain ();
+    void generateTerrains ();
     GLuint linkShaders (GLuint vertShader, GLuint fragShader);
     GLuint loadShaderProgram (string fragFilename, string vertFilename, string &infoLog);
     GLuint loadTexture (string filename);
@@ -93,6 +94,9 @@ private:
     int m_ScreenNum;
     float m_maxAnisotrophy;
     bool m_disableColorMaps;
+    bool m_useMouse;
+    bool m_autopilot;
+    bool m_showWeb;
     float m_lightDir[4];
     GLuint m_nullTexture;
     GLuint m_terrainShader;

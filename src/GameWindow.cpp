@@ -46,7 +46,7 @@ GameWindow::GameWindow () {
     // Terrain region 3.
     m_regions[2].set (50.0f, 105.0f, 0, "data/textures/rock2.png");
     // Terrain region 4.
-    m_regions[3].set (106.0f, 255.0f, 0, "data/textures/rock.jpg");
+    m_regions[3].set (106.0f, 255.0f, 0, "data/textures/snow.jpg");
 
     m_background[0].set (0, "data/sand-bg0.jpg");
     m_background[1].set (0, "data/sand-bg1.jpg");
@@ -124,6 +124,7 @@ bool GameWindow::init () {
     }
 
     m_disableColorMaps = false;
+    m_showWeb = false;
     // Setup shaders.
 
     std::string infoLog;
@@ -145,8 +146,8 @@ bool GameWindow::init () {
 
     Vector3 pos;
 
-    pos.x = 0;
-    pos.z = 0;
+    pos.x = 100;
+    pos.z = 10;
     pos.y = m_terrain2.heightAt (pos.x, pos.z) + CAMERA_Y_OFFSET;
 
     m_camera.setBehavior (Camera::CAMERA_BEHAVIOR_FIRST_PERSON);
@@ -157,7 +158,7 @@ bool GameWindow::init () {
     m_camera.perspective (CAMERA_FOVX,
                          static_cast<float> (getSize ().x) / static_cast<float> (getSize ().y),
                          CAMERA_ZNEAR, CAMERA_ZFAR);
-    m_camera.lookAt (Vector3 (512 / 2.f, 0, 512 / 2.f));
+    m_camera.lookAt (Vector3 (512 / 2.f, 100, 512 / 2.f));
 
     float upperBounds = (HEIGHTMAP_SIZE * HEIGHTMAP_GRID_SPACING - (2.0f * HEIGHTMAP_GRID_SPACING));
     float lowerBounds = static_cast<float> (HEIGHTMAP_GRID_SPACING);
@@ -430,12 +431,21 @@ void GameWindow::saveScreenshot (string destDir = "", string filename = "") {
 
 }
 
+bool b_render = true;
 void GameWindow::keyboardEvent (sf::Keyboard::Key key) {
 
     if (key == sf::Keyboard::F11)
         saveScreenshot ();
     if (key == sf::Keyboard::Q)
         close ();
+    if (key == sf::Keyboard::E)
+        m_useMouse = !m_useMouse;
+    if (key == sf::Keyboard::R)
+        b_render = !b_render;
+    if (key == sf::Keyboard::P)
+        m_showWeb = !m_showWeb;
+    if (key == sf::Keyboard::C)
+        m_disableColorMaps = !m_disableColorMaps;
 
     if (key == sf::Keyboard::Space)
         generateTerrain ();
@@ -457,15 +467,44 @@ void GameWindow::getInput () {
     if (sf::Keyboard::isKeyPressed (sf::Keyboard::X))
         m_camera.moveUpward (-5.f);
 
+    if (sf::Joystick::isConnected (0)) {
 
-    sf::Vector2i centerPos (this->getSize ().x / 2, this->getSize ().y / 2);
+        float xAx = sf::Joystick::getAxisPosition (0, sf::Joystick::X);
+        if (xAx < -10.f || xAx > 10.f)
+            m_camera.strafeRight (xAx / 100.f);
+        float yAx = sf::Joystick::getAxisPosition (0, sf::Joystick::Y);
+        if (yAx < -10.f || yAx > 10.f)
+            m_camera.moveForward (-yAx / 100.f);
+        float uAx = sf::Joystick::getAxisPosition (0, sf::Joystick::U);
+        if (uAx < -10.f || uAx > 10.f)
+            m_camera.rotateSmoothly (-uAx / 100.f, 0, 0);
+        float vAx = sf::Joystick::getAxisPosition (0, sf::Joystick::V);
+        if (vAx < -10.f || vAx > 10.f)
+            m_camera.rotateSmoothly (0, -vAx / 100.f, 0);
 
-    // Calculate deltas: d = xf - xi
-    float dX = (sf::Mouse::getPosition (*this).x - centerPos.x) / 10.f;
-    float dY = (sf::Mouse::getPosition (*this).y - centerPos.y) / 10.f;
 
-    m_camera.rotateSmoothly (-dX, -dY, 0);
-    sf::Mouse::setPosition (centerPos, *this);
+        if (sf::Joystick::isButtonPressed (0, 3))
+            close ();
+        if (sf::Joystick::isButtonPressed (0, 4))
+            m_camera.moveUpward (5.f);
+        if (sf::Joystick::isButtonPressed (0, 5))
+            m_camera.moveUpward (-5.f);
+        if (sf::Joystick::isButtonPressed (0, 15))
+            m_disableColorMaps = !m_disableColorMaps;
+        if (sf::Joystick::isButtonPressed (0, 14))
+            m_autopilot = !m_autopilot;
+    }
+
+    if (m_useMouse) {
+        sf::Vector2i centerPos (this->getSize ().x / 2, this->getSize ().y / 2);
+
+        // Calculate deltas: d = xf - xi
+        float dX = (sf::Mouse::getPosition (*this).x - centerPos.x) / 10.f;
+        float dY = (sf::Mouse::getPosition (*this).y - centerPos.y) / 10.f;
+
+        m_camera.rotateSmoothly (-dX, -dY, 0);
+        sf::Mouse::setPosition (centerPos, *this);
+    }
 
 }
 
@@ -474,19 +513,8 @@ void GameWindow::updateCameraPosition () {
     const Vector3 &pos = m_camera.getPosition();
     Vector3 newPos (pos);
 
-    if (pos.x > m_cameraBoundsMax.x)
-        newPos.x = m_cameraBoundsMax.x;
-
-    if (pos.x < m_cameraBoundsMin.x)
-        newPos.x = m_cameraBoundsMin.x;
-
-    if (pos.z > m_cameraBoundsMax.z)
-        newPos.z = m_cameraBoundsMax.z;
-
-    if (pos.z < m_cameraBoundsMin.z)
-        newPos.z = m_cameraBoundsMin.z;
-
-    newPos.y = m_terrain.getHeightMap ().heightAt (newPos.x, newPos.z) + CAMERA_Y_OFFSET;
+    if (pos.y <= m_terrain2.heightAt (pos.x, pos.z) + CAMERA_Y_OFFSET)
+        newPos.y = m_terrain.getHeightMap ().heightAt (newPos.x, newPos.z) + CAMERA_Y_OFFSET;
 
     m_camera.setPosition (newPos);
 
@@ -497,6 +525,7 @@ void GameWindow::renderTerrain () {
     glUseProgram (m_terrainShader);
     updateTerrainShaderParameters ();
 
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
     glEnable (GL_LIGHTING);
     glEnable (GL_LIGHT0);
     glLightfv (GL_LIGHT0, GL_POSITION, m_lightDir);
@@ -514,7 +543,12 @@ void GameWindow::renderTerrain () {
     }
 
     //m_terrain.draw ();
+    if (m_showWeb)
+        glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+
     m_terrain2.render ();
+    glScalef (512, 1, 512);
+    //m_water.render ();
 
     for (int i = 4; i >= 0; --i) {
         glActiveTexture (GL_TEXTURE0 + i);
@@ -531,7 +565,10 @@ void GameWindow::renderTerrain () {
 void GameWindow::render () {
 
     glEnable (GL_DEPTH_TEST);
-//    glEnable (GL_CULL_FACE);
+    glEnable (GL_BLEND);
+    //glDepthMask(GL_TRUE);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     glViewport (0, 0, getSize ().x, getSize ().y);
     glClearColor (0.3f, 0.5f, 0.6f, 0.0f);
@@ -548,7 +585,6 @@ void GameWindow::render () {
     renderTerrain ();
 
 
-    m_water.render ();
 
 }
 
@@ -565,6 +601,9 @@ void GameWindow::run () {
                 close ();
             if (event.type == sf::Event::KeyPressed)
                 keyboardEvent (event.key.code);
+            if (event.type == sf::Event::JoystickConnected)
+                Console::message ("Joystick with " + Console::toString ((int) sf::Joystick::getButtonCount (0))
+                                  + " buttons connected");
 
         }
         getInput ();
@@ -575,7 +614,8 @@ void GameWindow::run () {
             this->draw (m_splashscreen);
         else {
             popGLStates ();
-            render ();
+            if (b_render)
+                render ();
         }
         this->display ();
     }

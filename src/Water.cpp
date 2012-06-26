@@ -192,7 +192,7 @@ void Water::render () {
 
     /* The ground */
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable (GL_TEXTURE_2D);
     glColor3f (1, 0.9, 0.7);
     glBegin (GL_TRIANGLE_FAN);
@@ -241,11 +241,11 @@ bool Water::genTextures () {
     /* Texture loading  */
     glGenTextures (1, &m_textureId);
     sf::Image caustic_texture;
-    caustic_texture.loadFromFile ("data/reflection.png");
+    caustic_texture.loadFromFile ("data/terrain.bmp");
 
     glBindTexture (GL_TEXTURE_2D, m_textureId);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, caustic_texture.getSize ().x, caustic_texture.getSize ().y,
-                  0, GL_RGBA, GL_UNSIGNED_BYTE,  caustic_texture.getPixelsPtr ());
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, caustic_texture.getSize ().x, caustic_texture.getSize ().y,
+                  0, GL_RGB, GL_UNSIGNED_BYTE,  caustic_texture.getPixelsPtr ());
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);

@@ -299,8 +299,6 @@ bool Terrain2::generateVertices() {
 
             pVertex->x = static_cast<float>(x * gridSpacing);
             pVertex->y = heightAt (x, z) * m_heightScale;
-            if (pVertex->y < 0)
-                Console::message ("Less than 0 in " + Console::toString (x) + " " + Console::toString (z));
             pVertex->z = static_cast<float>(z * gridSpacing);
 
             normalAtPixel(x, z, normal);
