@@ -44,21 +44,14 @@ GameWindow::GameWindow () {
     // Terrain region 2.
     m_regions[1].set (16.0f, 49.0f, 0, "data/textures/grass2.png");
     // Terrain region 3.
-    m_regions[2].set (50.0f, 105.0f, 0, "data/textures/rock2.png");
+    m_regions[2].set (30.0f, 105.0f, 0, "data/textures/rock2.png");
     // Terrain region 4.
     m_regions[3].set (106.0f, 255.0f, 0, "data/textures/snow.jpg");
 
-    m_background[0].set (0, "data/sand-bg0.jpg");
-    m_background[1].set (0, "data/sand-bg1.jpg");
-    m_background[2].set (0, "data/sand-bg2.jpg");
-    m_background[3].set (0, "data/sand-bg3.jpg");
-    m_background[4].set (0, "data/sand-bg4.jpg");
-    m_background[5].set (0, "data/sand-bg5.jpg");
-
     // Light directions
     m_lightDir[0] = 0.0f;
-    m_lightDir[1] = 1.0f;
-    m_lightDir[2] = 0.0f;
+    m_lightDir[1] = 2.5f;
+    m_lightDir[2] = 0.5f;
     m_lightDir[3] = 0.0f;
 
     setMouseCursorVisible (false);
@@ -95,8 +88,8 @@ GameWindow::~GameWindow () {
 
 bool GameWindow::init () {
 
-    create (sf::VideoMode (1024, 600), "TerrainGL",
-            sf::Style::Default, sf::ContextSettings (32, 0, 4));
+    create (sf::VideoMode::getFullscreenModes ()[0], "TerrainGL",
+            sf::Style::Fullscreen, sf::ContextSettings (32, 0, 4));
 
     m_clock.restart ();
 
@@ -116,11 +109,6 @@ bool GameWindow::init () {
     for (int i = 0; i < TERRAIN_REGIONS_COUNT; i++) {
         if (!(m_regions[i].texture = loadTexture (m_regions[i].filename)))
             Console::error ("Failed to load texture: " + m_regions[i].filename);
-    }
-
-    for (int i = 0; i < 6; i++) {
-        if (!(m_background[i].texture = loadTexture (m_background[i].filename)))
-            throw error ("Failed to load texture: " + m_background[i].filename);
     }
 
     m_disableColorMaps = false;
@@ -452,6 +440,20 @@ void GameWindow::keyboardEvent (sf::Keyboard::Key key) {
 
 }
 
+void GameWindow::joystickEvent (uint button) {
+
+    if (sf::Joystick::isButtonPressed (0, 3))
+        close ();
+    if (sf::Joystick::isButtonPressed (0, 4))
+        m_camera.moveUpward (5.f);
+    if (sf::Joystick::isButtonPressed (0, 5))
+        m_camera.moveUpward (-5.f);
+    if (sf::Joystick::isButtonPressed (0, 2))
+        m_disableColorMaps = !m_disableColorMaps;
+    if (sf::Joystick::isButtonPressed (0, 1))
+        m_showWeb = !m_showWeb;
+}
+
 void GameWindow::getInput () {
 
     if (sf::Keyboard::isKeyPressed (sf::Keyboard::A))
@@ -482,17 +484,6 @@ void GameWindow::getInput () {
         if (vAx < -10.f || vAx > 10.f)
             m_camera.rotateSmoothly (0, -vAx / 100.f, 0);
 
-
-        if (sf::Joystick::isButtonPressed (0, 3))
-            close ();
-        if (sf::Joystick::isButtonPressed (0, 4))
-            m_camera.moveUpward (5.f);
-        if (sf::Joystick::isButtonPressed (0, 5))
-            m_camera.moveUpward (-5.f);
-        if (sf::Joystick::isButtonPressed (0, 15))
-            m_disableColorMaps = !m_disableColorMaps;
-        if (sf::Joystick::isButtonPressed (0, 14))
-            m_autopilot = !m_autopilot;
     }
 
     if (m_useMouse) {
@@ -601,6 +592,8 @@ void GameWindow::run () {
                 close ();
             if (event.type == sf::Event::KeyPressed)
                 keyboardEvent (event.key.code);
+            if (event.type == sf::Event::JoystickButtonPressed)
+                joystickEvent (event.joystickButton.button);
             if (event.type == sf::Event::JoystickConnected)
                 Console::message ("Joystick with " + Console::toString ((int) sf::Joystick::getButtonCount (0))
                                   + " buttons connected");

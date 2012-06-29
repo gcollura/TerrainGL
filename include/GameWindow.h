@@ -70,6 +70,7 @@ private:
     bool init ();
     bool initGL ();
     void keyboardEvent (sf::Keyboard::Key key);
+    void joystickEvent (uint button);
     void getInput ();
 
     GLuint compileShader (GLenum type, const GLchar* g_source, GLint length);
